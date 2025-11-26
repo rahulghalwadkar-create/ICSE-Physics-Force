@@ -2,296 +2,420 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>ICSE 10 Physics – Force Game</title>
+  <title>ICSE Class 10 Physics – Force Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+    :root {
+      --bg-main: #020617;
+      --bg-card: #020617;
+      --bg-soft: #020617;
+      --accent: #22c55e;
+      --accent-soft: rgba(34,197,94,0.15);
+      --accent-alt: #38bdf8;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border-subtle: #1f2937;
+      --danger: #ef4444;
+      --danger-soft: rgba(239,68,68,0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #0f172a, #1e293b);
-      color: #e5e7eb;
       margin: 0;
       padding: 0;
-    }
-    header {
-      background: #0f172a;
-      padding: 16px 24px;
-      border-bottom: 2px solid #22c55e;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #0b1120, #020617 55%);
+      color: var(--text-main);
+      min-height: 100vh;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
     }
+
+    header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-subtle);
+      background: linear-gradient(90deg, #020617, #020617);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
     header h1 {
-      font-size: 20px;
+      font-size: 18px;
       margin: 0;
       color: #facc15;
+      letter-spacing: 0.03em;
     }
-    #playerInfo {
-      font-size: 14px;
+
+    header small {
+      display: block;
+      font-size: 11px;
+      color: var(--text-muted);
     }
+
+    #playerMeta {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
     main {
-      max-width: 900px;
-      margin: 16px auto 32px;
+      flex: 1;
+      display: flex;
+      justify-content: center;
       padding: 16px;
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 10px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      background: rgba(15,23,42,0.95);
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      padding: 16px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.6);
+    }
+
+    h2 {
+      margin: 0 0 6px;
+      font-size: 18px;
+      color: #a5b4fc;
+    }
+
+    p {
+      margin: 4px 0 8px;
+      font-size: 14px;
+      color: var(--text-main);
+    }
+
+    #intro, #gameScreen, #summaryScreen {
+      margin-top: 4px;
+    }
+
     .hidden {
       display: none;
     }
-    #intro, #gameScreen, #summaryScreen {
-      margin-top: 8px;
+
+    input[type="text"], input[type="number"], select {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: var(--text-main);
+      font-size: 14px;
+      outline: none;
     }
-    h2 {
-      margin-top: 0;
-      color: #a5b4fc;
+
+    input[type="text"]:focus, input[type="number"]:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(34,197,94,0.5);
     }
+
     button {
       cursor: pointer;
-      border: none;
       border-radius: 999px;
-      padding: 10px 20px;
+      border: none;
+      padding: 8px 16px;
       font-size: 14px;
+      font-weight: 600;
       margin: 4px 2px;
-      background: #22c55e;
-      color: #0f172a;
-      font-weight: bold;
-      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s ease;
+      background: var(--accent);
+      color: #020617;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s ease;
     }
+
     button:hover {
       transform: translateY(-1px);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.45);
       background: #4ade80;
     }
+
     button.secondary {
-      background: #38bdf8;
+      background: var(--accent-alt);
       color: #020617;
     }
+
+    button.secondary:hover {
+      background: #7dd3fc;
+    }
+
     button.danger {
-      background: #ef4444;
+      background: var(--danger);
       color: #f9fafb;
+    }
+
+    button.danger:hover {
+      background: #f97373;
     }
 
     #statusBar {
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
+      gap: 6px;
       margin-bottom: 8px;
-      padding: 8px 12px;
-      background: rgba(15,23,42,0.9);
+      padding: 8px 10px;
+      background: #020617;
       border-radius: 8px;
-      border: 1px solid #1f2937;
-      font-size: 13px;
-    }
-    .pill {
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(15,23,42,0.9);
-      border: 1px solid #4b5563;
-      margin-right: 4px;
-    }
-    #rankPill {
-      background: rgba(22,163,74,0.15);
-      border-color: #22c55e;
+      border: 1px solid var(--border-subtle);
+      font-size: 12px;
     }
 
-    #questionBox {
-      margin-top: 8px;
-      padding: 16px;
-      background: rgba(15,23,42,0.95);
+    .pill {
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: #020617;
+      border: 1px solid #4b5563;
+      margin-right: 4px;
+      white-space: nowrap;
+    }
+
+    #rankPill {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: #bbf7d0;
+    }
+
+    #progressBarOuter {
+      width: 100%;
+      height: 6px;
+      background: #020617;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid #111827;
+      margin-bottom: 10px;
+    }
+
+    #progressBarInner {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #22c55e, #a3e635);
+      transition: width 0.25s ease;
+    }
+
+    #topicRow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    #questionCard {
+      background: #020617;
       border-radius: 10px;
-      border: 1px solid #374151;
+      border: 1px solid #1f2937;
+      padding: 12px;
     }
-    #questionText {
-      font-size: 16px;
-      margin-bottom: 12px;
-    }
+
     .topicTag {
       display: inline-block;
       padding: 2px 10px;
       border-radius: 999px;
-      background: #111827;
       border: 1px solid #4b5563;
-      font-size: 11px;
+      background: #020617;
+      font-size: 10px;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 8px;
       color: #a5b4fc;
+      margin-bottom: 6px;
     }
+
+    #questionText {
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+
     .options {
-      margin: 8px 0 4px;
+      margin: 4px 0 4px;
     }
+
     .optionBtn {
       width: 100%;
       text-align: left;
       margin: 4px 0;
       border-radius: 999px;
       padding: 8px 12px;
-      background: #111827;
+      background: #020617;
       border: 1px solid #374151;
-      color: #e5e7eb;
+      color: var(--text-main);
       font-size: 14px;
     }
+
     .optionBtn.correct {
-      background: rgba(34,197,94,0.15);
-      border-color: #22c55e;
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: #bbf7d0;
     }
+
     .optionBtn.wrong {
-      background: rgba(239,68,68,0.15);
-      border-color: #ef4444;
+      background: var(--danger-soft);
+      border-color: var(--danger);
+      color: #fecaca;
     }
 
     #feedback {
-      font-size: 14px;
-      margin-top: 8px;
-      min-height: 20px;
+      font-size: 13px;
+      margin-top: 6px;
+      min-height: 18px;
     }
+
     #feedback.correct {
       color: #4ade80;
     }
+
     #feedback.wrong {
       color: #f97316;
     }
 
     #badgeBar {
-      margin-top: 12px;
-      font-size: 13px;
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
     }
+
     .badge {
       display: inline-block;
-      margin: 2px 4px 2px 0;
+      margin: 2px 4px 0 0;
       padding: 3px 8px;
       border-radius: 999px;
-      background: rgba(59,130,246,0.15);
       border: 1px solid #60a5fa;
+      background: rgba(59,130,246,0.12);
       font-size: 11px;
+      color: #bfdbfe;
     }
 
-    #controlBar {
+    #controlRow {
       display: flex;
+      flex-wrap: wrap;
       justify-content: flex-end;
-      align-items: center;
+      gap: 6px;
       margin-top: 10px;
-      gap: 8px;
-    }
-
-    #progressBarOuter {
-      width: 100%;
-      height: 6px;
-      background: #111827;
-      border-radius: 999px;
-      overflow: hidden;
-      margin-top: 6px;
-    }
-    #progressBarInner {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #22c55e, #a3e635);
-      transition: width 0.3s ease;
-    }
-
-    #nameInput {
-      padding: 8px 12px;
-      border-radius: 999px;
-      border: 1px solid #4b5563;
-      background: #020617;
-      color: #e5e7eb;
-      width: 220px;
-      font-size: 14px;
-    }
-    #topicSelect {
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid #4b5563;
-      background: #020617;
-      color: #e5e7eb;
-      font-size: 13px;
     }
 
     #summaryScreen ul {
       padding-left: 18px;
+      font-size: 14px;
+    }
+
+    #summaryScreen li {
+      margin-bottom: 4px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 15px;
+      }
+      .container {
+        padding: 12px;
+      }
+      #statusBar {
+        font-size: 11px;
+      }
     }
   </style>
 </head>
 <body>
 <header>
-  <h1>ICSE 10 Physics – Force: Gamified Quiz</h1>
-  <div id="playerInfo">
+  <div>
+    <h1>ICSE X Physics – Force Game</h1>
+    <small>Gamified MCQ + numerical quiz for Chapter: Force</small>
+  </div>
+  <div id="playerMeta">
     Player: <span id="playerNameDisplay">Guest</span>
   </div>
 </header>
 
 <main>
-  <!-- INTRO SCREEN -->
-  <section id="intro">
-    <h2>Start Chapter “Force” Game</h2>
-    <p>Earn points, unlock badges and level up your rank while revising ICSE Class 10 Physics – Chapter: Force.</p>
-    <p>
-      <input id="nameInput" placeholder="Enter student name" />
-      <button id="startBtn">Start Game</button>
-    </p>
-    <p style="font-size: 13px; color:#9ca3af;">
-      Game topics: Basics of force & motion, moment of force, equilibrium, centre of gravity, uniform circular motion & centripetal force. [Syllabus aligned] [web:1][web:7]
-    </p>
-  </section>
+  <div class="container">
+    <!-- INTRO -->
+    <section id="intro">
+      <h2>Start Force Chapter Challenge</h2>
+      <p>Answer questions, earn points, unlock badges and level up your rank while revising ICSE Class 10 Physics Chapter: Force.</p>
+      <p>
+        <input id="nameInput" type="text" placeholder="Enter student name" />
+        <button id="startBtn">Start Game</button>
+      </p>
+      <p style="font-size:12px;color:var(--text-muted);">
+        Topics covered: basics of force & motion, moment of force, equilibrium & principle of moments, centre of gravity, uniform circular motion and centripetal force (as per ICSE syllabus). [web:1][web:7]
+      </p>
+    </section>
 
-  <!-- GAME SCREEN -->
-  <section id="gameScreen" class="hidden">
-    <div id="statusBar">
-      <div>
-        <span class="pill" id="pointsPill">Points: 0</span>
-        <span class="pill" id="questionPill">Question: 1 / 10</span>
-      </div>
-      <div>
-        <span class="pill" id="rankPill">Rank: Trainee</span>
-      </div>
-    </div>
-
-    <div id="progressBarOuter">
-      <div id="progressBarInner"></div>
-    </div>
-
-    <div style="margin-top:10px;">
-      <label for="topicSelect" style="font-size:13px;color:#9ca3af;">Focus topic (optional): </label>
-      <select id="topicSelect">
-        <option value="all">All topics mixed</option>
-        <option value="force_basics">Force & Motion Basics</option>
-        <option value="moment_torque">Moment of Force / Torque</option>
-        <option value="equilibrium">Equilibrium & Principle of Moments</option>
-        <option value="cog">Centre of Gravity</option>
-        <option value="ucm">Uniform Circular Motion</option>
-      </select>
-      <button class="secondary" id="newQuestionBtn">New Question</button>
-    </div>
-
-    <div id="questionBox">
-      <div class="topicTag" id="topicTag">Topic: –</div>
-      <div id="questionText">Click “New Question” to begin.</div>
-      <div id="optionsContainer" class="options"></div>
-      <div id="feedback"></div>
-
-      <div id="badgeBar">
-        Badges:
-        <span id="badgeList"></span>
+    <!-- GAME -->
+    <section id="gameScreen" class="hidden">
+      <div id="statusBar">
+        <div>
+          <span class="pill" id="pointsPill">Points: 0</span>
+          <span class="pill" id="questionPill">Question: 1 / 10</span>
+        </div>
+        <div>
+          <span class="pill" id="rankPill">Rank: Trainee</span>
+        </div>
       </div>
 
-      <div id="controlBar">
-        <button id="skipBtn" class="danger">Skip</button>
-        <button id="endBtn">End Game</button>
+      <div id="progressBarOuter">
+        <div id="progressBarInner"></div>
       </div>
-    </div>
-  </section>
 
-  <!-- SUMMARY SCREEN -->
-  <section id="summaryScreen" class="hidden">
-    <h2>Game Summary</h2>
-    <p id="summaryText"></p>
-    <ul id="summaryBadges"></ul>
-    <button id="playAgainBtn">Play Again</button>
-  </section>
+      <div id="topicRow">
+        Focus topic:
+        <select id="topicSelect">
+          <option value="all">All topics mixed</option>
+          <option value="force_basics">Force & Motion Basics</option>
+          <option value="moment_torque">Moment of Force / Torque</option>
+          <option value="equilibrium">Equilibrium & Principle of Moments</option>
+          <option value="cog">Centre of Gravity</option>
+          <option value="ucm">Uniform Circular Motion</option>
+        </select>
+        <button class="secondary" id="newQuestionBtn">New Question</button>
+      </div>
+
+      <div id="questionCard">
+        <div class="topicTag" id="topicTag">Topic: –</div>
+        <div id="questionText">Click “New Question” to begin the game.</div>
+        <div id="optionsContainer" class="options"></div>
+        <div id="feedback"></div>
+
+        <div id="badgeBar">
+          Badges: <span id="badgeList"></span>
+        </div>
+
+        <div id="controlRow">
+          <button id="skipBtn" class="danger">Skip</button>
+          <button id="endBtn">End Game</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUMMARY -->
+    <section id="summaryScreen" class="hidden">
+      <h2>Game Summary</h2>
+      <p id="summaryText"></p>
+      <ul id="summaryBadges"></ul>
+      <button id="playAgainBtn">Play Again</button>
+    </section>
+  </div>
 </main>
 
+<footer>
+  Designed for GitHub Pages – single static HTML, CSS & JS file.
+</footer>
+
 <script>
-  // ----------- CONFIG: TOPICS (aligned with ICSE Force chapter) -----------
+  // ---------- TOPICS (ICSE Force chapter subtopics) ----------
   const TOPICS = {
     force_basics: "Force & Motion Basics",
     moment_torque: "Moment of Force / Torque",
@@ -300,19 +424,18 @@
     ucm: "Uniform Circular Motion & Centripetal Force"
   };
 
-  // ----------- QUESTION BANK (original questions) -----------
-  // You can freely add more questions here.
+  // ---------- QUESTION BANK (original questions) ----------
   const QUESTION_BANK = [
     {
       id: 1,
       topic: "force_basics",
       type: "mcq",
-      text: "Which statement describes a force most correctly?",
+      text: "Which statement describes a force most accurately?",
       options: [
-        "A push or pull that only changes shape of a body",
-        "A physical cause that can change the state of rest or motion of a body",
-        "A quantity that always produces rotation only",
-        "A quantity that acts only when objects are in contact"
+        "Only a push that changes shape of a body",
+        "Any influence that changes the state of rest or motion of a body",
+        "Only a pull that causes rotation",
+        "A quantity that never changes direction of motion"
       ],
       correctIndex: 1,
       points: 10
@@ -321,14 +444,14 @@
       id: 2,
       topic: "force_basics",
       type: "mcq",
-      text: "A body continues in its state of rest or uniform motion in a straight line unless acted upon by an external unbalanced force. This illustrates:",
+      text: "A ball at rest on a table begins to move only when pushed. This illustrates:",
       options: [
-        "Definition of force",
-        "Newton’s second law",
-        "Inertia and Newton’s first law",
-        "Uniform circular motion"
+        "Uniform circular motion",
+        "Inertia and need of an unbalanced force",
+        "Conservation of momentum",
+        "Centripetal force"
       ],
-      correctIndex: 2,
+      correctIndex: 1,
       points: 10
     },
     {
@@ -339,7 +462,7 @@
       options: [
         "Product of force and time",
         "Product of force and perpendicular distance from the point",
-        "Ratio of force and perpendicular distance",
+        "Ratio of force and distance from the point",
         "Product of mass and acceleration"
       ],
       correctIndex: 1,
@@ -349,8 +472,8 @@
       id: 4,
       topic: "moment_torque",
       type: "numerical",
-      text: "A force of 8 N acts at a perpendicular distance of 0.25 m from a hinge. Calculate the moment of this force about the hinge (in N m).",
-      answer: 2.0,
+      text: "A force of 6 N acts at a perpendicular distance of 0.3 m from a pivot. Calculate the moment of this force about the pivot (in N m).",
+      answer: 1.8,
       tolerance: 0.05,
       points: 15
     },
@@ -360,8 +483,8 @@
       type: "mcq",
       text: "For a uniform bar to be in equilibrium about a pivot under several forces:",
       options: [
-        "Only the algebraic sum of all forces must be zero",
-        "Only the algebraic sum of clockwise moments must be zero",
+        "Only the sum of all forces must be zero",
+        "Only the sum of clockwise moments must be zero",
         "Both net force and net moment about the pivot must be zero",
         "Net force must be maximum"
       ],
@@ -374,19 +497,19 @@
       type: "mcq",
       text: "The centre of gravity of a body is the point where:",
       options: [
-        "The mass of the body is maximum",
-        "No gravitational force acts",
+        "Mass of the body is maximum",
         "The whole weight of the body appears to act",
+        "No gravitational force acts",
         "Only horizontal forces act"
       ],
-      correctIndex: 2,
+      correctIndex: 1,
       points: 10
     },
     {
       id: 7,
       topic: "cog",
       type: "mcq",
-      text: "A body will be more stable when:",
+      text: "A body is more stable when:",
       options: [
         "Its centre of gravity is high and base is small",
         "Its centre of gravity is low and base is large",
@@ -414,8 +537,8 @@
       id: 9,
       topic: "ucm",
       type: "numerical",
-      text: "A body of mass 0.4 kg moves in a circle of radius 0.5 m with a speed of 3 m/s. Calculate the centripetal force (in N). Use F = mv² / r.",
-      answer: (0.4 * 9) / 0.5, // 7.2 N
+      text: "A body of mass 0.5 kg moves in a circle of radius 0.4 m with a speed of 3 m/s. Calculate the centripetal force (in N). Use F = mv² / r.",
+      answer: (0.5 * 9) / 0.4, // 11.25 N
       tolerance: 0.1,
       points: 18
     },
@@ -423,7 +546,7 @@
       id: 10,
       topic: "moment_torque",
       type: "mcq",
-      text: "Clockwise and anticlockwise moments about a pivot are equal. The bar is:",
+      text: "If the sum of clockwise moments equals the sum of anticlockwise moments about a pivot, the bar is:",
       options: [
         "In rotational equilibrium",
         "Accelerating linearly",
@@ -435,17 +558,15 @@
     }
   ];
 
-  // ----------- GAME STATE -----------
   const MAX_QUESTIONS = 10;
 
   let playerName = "Guest";
   let totalPoints = 0;
-  let questionsAsked = 0;
+  let questionsAnswered = 0;
   let badges = [];
   let currentQuestion = null;
   let answeredCurrent = false;
 
-  // ----------- RANK & BADGE LOGIC -----------
   function getRank(points) {
     if (points < 50) return "Trainee";
     if (points < 120) return "Junior Commander";
@@ -454,15 +575,13 @@
   }
 
   function updateBadges() {
-    const newBadges = new Set(badges);
-
-    // Simple rules based on chapter subtopics
-    if (totalPoints >= 60) newBadges.add("Torque Titan");          // strong momentum in numericals
-    if (totalPoints >= 100) newBadges.add("Equilibrium Expert");
-    if (totalPoints >= 140) newBadges.add("Orbit Pro");
-    if (totalPoints >= 180) newBadges.add("Chapter Champion");
-
-    badges = Array.from(newBadges);
+    const set = new Set(badges);
+    if (totalPoints >= 40) set.add("Force Rookie");
+    if (totalPoints >= 80) set.add("Torque Titan");
+    if (totalPoints >= 120) set.add("Equilibrium Expert");
+    if (totalPoints >= 160) set.add("Orbit Pro");
+    if (totalPoints >= 200) set.add("Chapter Champion");
+    badges = Array.from(set);
   }
 
   function renderBadges() {
@@ -476,17 +595,15 @@
     });
   }
 
-  // ----------- UI HELPERS -----------
   function setText(id, text) {
     document.getElementById(id).textContent = text;
   }
 
   function updateStatusBar() {
     setText("pointsPill", "Points: " + totalPoints);
-    setText("questionPill", "Question: " + Math.min(questionsAsked + 1, MAX_QUESTIONS) + " / " + MAX_QUESTIONS);
+    setText("questionPill", "Question: " + Math.min(questionsAnswered + 1, MAX_QUESTIONS) + " / " + MAX_QUESTIONS);
     setText("rankPill", "Rank: " + getRank(totalPoints));
-
-    const progress = (questionsAsked / MAX_QUESTIONS) * 100;
+    const progress = (questionsAnswered / MAX_QUESTIONS) * 100;
     document.getElementById("progressBarInner").style.width = progress + "%";
   }
 
@@ -496,26 +613,24 @@
     fb.className = "";
   }
 
-  // ----------- QUESTION SELECTION -----------
   function pickQuestion(topicFilter) {
     let pool = QUESTION_BANK.slice();
     if (topicFilter && topicFilter !== "all") {
       pool = pool.filter(q => q.topic === topicFilter);
     }
     if (pool.length === 0) return null;
-    return pool[Math.floor(Math.random() * pool.length)];
+    const index = Math.floor(Math.random() * pool.length);
+    return pool[index];
   }
 
   function renderQuestion(q) {
     currentQuestion = q;
     answeredCurrent = false;
-
-    document.getElementById("topicTag").textContent = "Topic: " + TOPICS[q.topic];
+    setText("topicTag", "Topic: " + TOPICS[q.topic]);
     setText("questionText", q.text);
     clearFeedback();
-
-    const optionsContainer = document.getElementById("optionsContainer");
-    optionsContainer.innerHTML = "";
+    const container = document.getElementById("optionsContainer");
+    container.innerHTML = "";
 
     if (q.type === "mcq") {
       q.options.forEach((opt, idx) => {
@@ -523,64 +638,54 @@
         btn.className = "optionBtn";
         btn.textContent = String.fromCharCode(65 + idx) + ". " + opt;
         btn.addEventListener("click", () => handleMCQAnswer(idx, btn));
-        optionsContainer.appendChild(btn);
+        container.appendChild(btn);
       });
-    } else if (q.type === "numerical") {
+    } else {
       const input = document.createElement("input");
       input.type = "number";
       input.step = "0.01";
-      input.style.padding = "8px 10px";
-      input.style.borderRadius = "999px";
-      input.style.border = "1px solid #4b5563";
-      input.style.background = "#020617";
-      input.style.color = "#e5e7eb";
-      input.style.width = "140px";
       input.placeholder = "Enter answer";
-
-      const btn = document.createElement("button");
-      btn.textContent = "Submit";
-      btn.addEventListener("click", () => handleNumericalAnswer(input.value, btn));
-
-      optionsContainer.appendChild(input);
-      optionsContainer.appendChild(btn);
+      input.style.marginRight = "6px";
+      const submitBtn = document.createElement("button");
+      submitBtn.textContent = "Submit";
+      submitBtn.addEventListener("click", () => handleNumericalAnswer(input.value, submitBtn));
+      container.appendChild(input);
+      container.appendChild(submitBtn);
     }
   }
 
-  // ----------- ANSWER HANDLERS -----------
-  function handleMCQAnswer(chosenIndex, btnClicked) {
+  function handleMCQAnswer(choiceIndex, btnClicked) {
     if (answeredCurrent || !currentQuestion) return;
     answeredCurrent = true;
-
-    const optionsButtons = document.querySelectorAll(".optionBtn");
-    optionsButtons.forEach((btn, idx) => {
+    const buttons = document.querySelectorAll(".optionBtn");
+    buttons.forEach((btn, idx) => {
       if (idx === currentQuestion.correctIndex) {
         btn.classList.add("correct");
       }
-      if (idx === chosenIndex && idx !== currentQuestion.correctIndex) {
+      if (idx === choiceIndex && idx !== currentQuestion.correctIndex) {
         btn.classList.add("wrong");
       }
       btn.disabled = true;
     });
 
     const fb = document.getElementById("feedback");
-    if (chosenIndex === currentQuestion.correctIndex) {
+    if (choiceIndex === currentQuestion.correctIndex) {
       totalPoints += currentQuestion.points;
-      fb.textContent = "Correct! +" + currentQuestion.points + " points";
+      fb.textContent = "Correct! +" + currentQuestion.points + " points.";
       fb.className = "correct";
     } else {
-      fb.textContent = "Incorrect. Try to recall the concept and attempt a new question.";
+      fb.textContent = "Incorrect. Revisit the concept and try another question.";
       fb.className = "wrong";
     }
 
+    questionsAnswered++;
     updateBadges();
     renderBadges();
-    questionsAsked++;
     updateStatusBar();
   }
 
   function handleNumericalAnswer(value, submitBtn) {
     if (answeredCurrent || !currentQuestion) return;
-
     const fb = document.getElementById("feedback");
     const num = parseFloat(value);
     if (isNaN(num)) {
@@ -589,41 +694,40 @@
       return;
     }
 
-    const correct = Math.abs(num - currentQuestion.answer) <= currentQuestion.tolerance;
     answeredCurrent = true;
     submitBtn.disabled = true;
-
-    if (correct) {
+    const diff = Math.abs(num - currentQuestion.answer);
+    if (diff <= currentQuestion.tolerance) {
       totalPoints += currentQuestion.points;
-      fb.textContent = "Correct! Approx. answer: " + currentQuestion.answer +
-        " N m (or N). +" + currentQuestion.points + " points";
+      fb.textContent = "Correct. Approximate value: " + currentQuestion.answer + ". +" +
+        currentQuestion.points + " points.";
       fb.className = "correct";
     } else {
-      fb.textContent = "Not accurate. Approx. correct answer is " + currentQuestion.answer + ". Revise the formula.";
+      fb.textContent = "Not accurate. Approximate correct answer is " +
+        currentQuestion.answer + ". Revise the formula.";
       fb.className = "wrong";
     }
 
+    questionsAnswered++;
     updateBadges();
     renderBadges();
-    questionsAsked++;
     updateStatusBar();
   }
 
-  // ----------- GAME FLOW -----------
   function startGame() {
     document.getElementById("intro").classList.add("hidden");
     document.getElementById("summaryScreen").classList.add("hidden");
     document.getElementById("gameScreen").classList.remove("hidden");
 
     totalPoints = 0;
-    questionsAsked = 0;
+    questionsAnswered = 0;
     badges = [];
     currentQuestion = null;
     answeredCurrent = false;
     renderBadges();
     updateStatusBar();
     clearFeedback();
-    setText("questionText", "Click “New Question” to begin.");
+    setText("questionText", "Click “New Question” to begin the game.");
     document.getElementById("optionsContainer").innerHTML = "";
     document.getElementById("progressBarInner").style.width = "0%";
   }
@@ -631,32 +735,31 @@
   function endGame() {
     document.getElementById("gameScreen").classList.add("hidden");
     document.getElementById("summaryScreen").classList.remove("hidden");
-
     const rank = getRank(totalPoints);
-    const summaryText = document.getElementById("summaryText");
-    summaryText.textContent =
-      playerName + ", you scored " + totalPoints + " points and reached rank “" + rank +
-      "” after " + questionsAsked + " questions.";
+    const summary = document.getElementById("summaryText");
+    summary.textContent = playerName +
+      ", you scored " + totalPoints + " points and reached rank \"" +
+      rank + "\" after answering " + questionsAnswered + " question(s).";
 
-    const ul = document.getElementById("summaryBadges");
-    ul.innerHTML = "";
+    const list = document.getElementById("summaryBadges");
+    list.innerHTML = "";
     if (badges.length > 0) {
       const heading = document.createElement("li");
       heading.textContent = "Unlocked badges:";
-      ul.appendChild(heading);
+      list.appendChild(heading);
       badges.forEach(b => {
         const li = document.createElement("li");
         li.textContent = "• " + b;
-        ul.appendChild(li);
+        list.appendChild(li);
       });
     } else {
       const li = document.createElement("li");
-      li.textContent = "No badges unlocked yet. Play again to earn badges!";
-      ul.appendChild(li);
+      li.textContent = "No badges unlocked yet. Play again to improve!";
+      list.appendChild(li);
     }
   }
 
-  // ----------- EVENT LISTENERS -----------
+  // ---------- EVENT BINDINGS ----------
   document.getElementById("startBtn").addEventListener("click", () => {
     const name = document.getElementById("nameInput").value.trim();
     playerName = name || "Guest";
@@ -665,7 +768,7 @@
   });
 
   document.getElementById("newQuestionBtn").addEventListener("click", () => {
-    if (questionsAsked >= MAX_QUESTIONS) {
+    if (questionsAnswered >= MAX_QUESTIONS) {
       endGame();
       return;
     }
@@ -682,9 +785,12 @@
   document.getElementById("skipBtn").addEventListener("click", () => {
     if (!currentQuestion) return;
     if (!answeredCurrent) {
-      // skipping counts as asked but no points
-      questionsAsked++;
+      questionsAnswered++;
       updateStatusBar();
+    }
+    if (questionsAnswered >= MAX_QUESTIONS) {
+      endGame();
+      return;
     }
     const topicFilter = document.getElementById("topicSelect").value;
     const q = pickQuestion(topicFilter);
@@ -692,9 +798,7 @@
     renderQuestion(q);
   });
 
-  document.getElementById("endBtn").addEventListener("click", () => {
-    endGame();
-  });
+  document.getElementById("endBtn").addEventListener("click", endGame);
 
   document.getElementById("playAgainBtn").addEventListener("click", () => {
     document.getElementById("intro").classList.remove("hidden");
