@@ -1,0 +1,323 @@
+import json
+import random
+
+# ----------------- CONFIG: SYLLABUS MAPPED TOPICS -----------------
+
+TOPICS = {
+    "force_basics": {
+        "name": "Force & Motion Basics",
+        "weight": 1
+    },
+    "moment_torque": {
+        "name": "Moment of Force / Torque",
+        "weight": 2
+    },
+    "equilibrium": {
+        "name": "Equilibrium & Principle of Moments",
+        "weight": 2
+    },
+    "cog": {
+        "name": "Centre of Gravity",
+        "weight": 1
+    },
+    "ucm": {
+        "name": "Uniform Circular Motion & Centripetal Force",
+        "weight": 2
+    }
+}
+
+# ----------------- SAMPLE QUESTION BANK (MCQ + NUMERICAL) -----------------
+# Very small demo bank – you can keep adding more.
+# Answer checking is basic (string match or small numeric tolerance).
+
+QUESTION_BANK = [
+    {
+        "id": 1,
+        "topic": "force_basics",
+        "type": "mcq",
+        "question": "Force is best described as:",
+        "options": [
+            "A physical quantity that only changes the shape of a body",
+            "A physical cause that can change the state of motion or shape of a body",
+            "A quantity that only produces rotation",
+            "A quantity that only produces translation"
+        ],
+        "answer": "b",
+        "points": 10
+    },
+    {
+        "id": 2,
+        "topic": "moment_torque",
+        "type": "mcq",
+        "question": "The SI unit of moment of a force (torque) is:",
+        "options": ["Newton", "Newton per metre", "Newton metre", "Joule per second"],
+        "answer": "c",
+        "points": 10
+    },
+    {
+        "id": 3,
+        "topic": "moment_torque",
+        "type": "numerical",
+        "question": "A force of 5 N acts at a perpendicular distance of 0.4 m from a pivot. "
+                    "Calculate the moment of the force about the pivot (in N m).",
+        "answer": 2.0,  # 5 × 0.4
+        "tolerance": 0.05,
+        "points": 15
+    },
+    {
+        "id": 4,
+        "topic": "equilibrium",
+        "type": "mcq",
+        "question": "For a body to be in equilibrium under several forces:",
+        "options": [
+            "Only the sum of all forces must be zero",
+            "Only the sum of all moments must be zero",
+            "Both the net force and net moment about any point must be zero",
+            "Net force must be maximum"
+        ],
+        "answer": "c",
+        "points": 10
+    },
+    {
+        "id": 5,
+        "topic": "cog",
+        "type": "mcq",
+        "question": "Centre of gravity of a body is the point:",
+        "options": [
+            "Where weight is minimum",
+            "Where whole weight of the body appears to act",
+            "Exactly at the geometric centre only",
+            "Where no force acts"
+        ],
+        "answer": "b",
+        "points": 10
+    },
+    {
+        "id": 6,
+        "topic": "ucm",
+        "type": "mcq",
+        "question": "In uniform circular motion of a stone tied to a string, the centripetal force is provided by:",
+        "options": [
+            "Weight of the stone",
+            "Tension in the string",
+            "Air resistance",
+            "No force is required"
+        ],
+        "answer": "b",
+        "points": 10
+    },
+    {
+        "id": 7,
+        "topic": "ucm",
+        "type": "numerical",
+        "question": "A body of mass 0.5 kg moves in a circle of radius 0.8 m with a speed of 4 m/s. "
+                    "Calculate the centripetal force (in N). Use F = mv^2 / r.",
+        "answer": 10.0,  # 0.5 * 16 / 0.8
+        "tolerance": 0.1,
+        "points": 20
+    }
+]
+
+# ----------------- RANKS & BADGES -----------------
+
+def get_rank(points: int) -> str:
+    if points < 50:
+        return "Trainee"
+    elif points < 120:
+        return "Junior Commander"
+    elif points < 200:
+        return "Senior Commander"
+    else:
+        return "Force Master"
+
+def assign_badges(student):
+    badges = set(student.get("badges", []))
+    total_points = student["points"]
+    topic_scores = student.get("topic_points", {})
+
+    # Simple rules – you can customise
+    if topic_scores.get("moment_torque", 0) >= 40:
+        badges.add("Torque Titan")
+    if topic_scores.get("equilibrium", 0) >= 30:
+        badges.add("Equilibrium Expert")
+    if topic_scores.get("ucm", 0) >= 30:
+        badges.add("Orbit Pro")
+    if total_points >= 150:
+        badges.add("Chapter 1 Champion")
+
+    student["badges"] = list(badges)
+
+# ----------------- CORE ENGINE -----------------
+
+class ForceGame:
+    def __init__(self, save_file="force_game_state.json"):
+        self.students = {}
+        self.save_file = save_file
+        self.load_state()
+
+    # ---------- Persistence ----------
+    def load_state(self):
+        try:
+            with open(self.save_file, "r") as f:
+                data = json.load(f)
+                self.students = data.get("students", {})
+        except FileNotFoundError:
+            self.students = {}
+
+    def save_state(self):
+        data = {"students": self.students}
+        with open(self.save_file, "w") as f:
+            json.dump(data, f, indent=2)
+
+    # ---------- Student management ----------
+    def add_student(self, name: str):
+        if name in self.students:
+            print(f"{name} already exists.")
+            return
+        self.students[name] = {
+            "points": 0,
+            "topic_points": {},
+            "badges": []
+        }
+        print(f"Student {name} added.")
+
+    def show_student(self, name: str):
+        s = self.students.get(name)
+        if not s:
+            print("Student not found.")
+            return
+        rank = get_rank(s["points"])
+        print(f"\n--- {name} ---")
+        print(f"Points: {s['points']} | Rank: {rank}")
+        print("Topic-wise points:")
+        for t_id, pts in s.get("topic_points", {}).items():
+            print(f"  - {TOPICS[t_id]['name']}: {pts}")
+        print("Badges:", ", ".join(s.get("badges", [])) or "None")
+        print()
+
+    def leaderboard(self, top_n=5):
+        print("\n=== Leaderboard ===")
+        sorted_students = sorted(
+            self.students.items(),
+            key=lambda kv: kv[1]["points"],
+            reverse=True
+        )
+        for i, (name, data) in enumerate(sorted_students[:top_n], start=1):
+            print(f"{i}. {name} - {data['points']} pts ({get_rank(data['points'])})")
+        print()
+
+    # ---------- Question handling ----------
+    def ask_question(self, student_name: str, topic_filter=None):
+        if student_name not in self.students:
+            print("Student not found.")
+            return
+
+        # Filter questions by topic if needed
+        questions = QUESTION_BANK
+        if topic_filter:
+            questions = [q for q in QUESTION_BANK if q["topic"] == topic_filter]
+            if not questions:
+                print("No questions for this topic yet.")
+                return
+
+        question = random.choice(questions)
+        student = self.students[student_name]
+
+        print("\n-----------------------------")
+        print(f"Question (Topic: {TOPICS[question['topic']]['name']}):")
+        print(question["question"])
+
+        if question["type"] == "mcq":
+            for idx, opt in enumerate(question["options"], start=1):
+                print(f"{idx}. {opt}")
+            ans = input("Enter option (a/b/c/d): ").strip().lower()
+            self._check_mcq(student, question, ans)
+        elif question["type"] == "numerical":
+            try:
+                ans_val = float(input("Enter numerical answer: ").strip())
+            except ValueError:
+                print("Invalid input. Answer treated as incorrect.")
+                ans_val = None
+            self._check_numerical(student, question, ans_val)
+
+        # Update badges after every question
+        assign_badges(student)
+        self.save_state()
+
+    def _check_mcq(self, student, question, ans):
+        if ans == question["answer"]:
+            print("Correct! 🎉")
+            self._award_points(student, question)
+        else:
+            print(f"Incorrect. Correct option was: {question['answer'].upper()}")
+
+    def _check_numerical(self, student, question, ans_val):
+        if ans_val is None:
+            print(f"Incorrect. Correct answer ≈ {question['answer']}")
+            return
+        correct = abs(ans_val - question["answer"]) <= question["tolerance"]
+        if correct:
+            print("Correct! 🎉")
+            self._award_points(student, question)
+        else:
+            print(f"Incorrect. Correct answer ≈ {question['answer']}")
+
+    def _award_points(self, student, question):
+        pts = question["points"]
+        student["points"] += pts
+        topic_id = question["topic"]
+        topic_pts = student["topic_points"].get(topic_id, 0)
+        student["topic_points"][topic_id] = topic_pts + pts
+        print(f"+{pts} points awarded! Total = {student['points']}")
+
+# ----------------- SIMPLE CLI -----------------
+
+def main():
+    game = ForceGame()
+
+    while True:
+        print("\n===== ICSE Class 10 Physics: FORCE – Gamification =====")
+        print("1. Add student")
+        print("2. Ask random question (any topic)")
+        print("3. Ask question by topic")
+        print("4. Show student profile")
+        print("5. Show leaderboard")
+        print("6. Exit")
+
+        choice = input("Enter choice: ").strip()
+
+        if choice == "1":
+            name = input("Enter student name: ").strip()
+            game.add_student(name)
+
+        elif choice == "2":
+            name = input("Student name: ").strip()
+            game.ask_question(name)
+
+        elif choice == "3":
+            print("\nAvailable topics:")
+            for t_id, info in TOPICS.items():
+                print(f"  - {t_id}: {info['name']}")
+            t = input("Enter topic id: ").strip()
+            name = input("Student name: ").strip()
+            if t in TOPICS:
+                game.ask_question(name, topic_filter=t)
+            else:
+                print("Invalid topic id.")
+
+        elif choice == "4":
+            name = input("Student name: ").strip()
+            game.show_student(name)
+
+        elif choice == "5":
+            game.leaderboard()
+
+        elif choice == "6":
+            print("Goodbye! Keep mastering Force 💪")
+            break
+
+        else:
+            print("Invalid choice. Try again.")
+
+if __name__ == "__main__":
+    main()
